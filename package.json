@@ -1,6 +1,6 @@
 {
   "name": "slidev-addon-excalidraw",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "show excalidraw in slidev",
   "type": "module",
   "scripts": {

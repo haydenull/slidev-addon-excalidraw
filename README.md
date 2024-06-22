@@ -13,7 +13,7 @@ layout: center
 # slidev-addon-excalidraw
 
 <Excalidraw
-  drawFilePath="/example.excalidraw.json"
+  drawFilePath="./example.excalidraw.json"
   class="w-[600px]"
   :darkMode="false"
   :background="false"
@@ -51,9 +51,12 @@ addons:
 
 ### Excalidraw
 
+> [!NOTE]
+> excalidraw file must be in `public`, and drawFilePath must be relative to your [Public Base Path](https://vitejs.dev/guide/build.html#public-base-path).
+
 ```vue
 <Excalidraw
-  drawFilePath="/example.excalidraw.json"
+  drawFilePath="./example.excalidraw.json"
   class="w-[600px]"
   :darkMode="false"
   :background="false"
@@ -64,6 +67,6 @@ addons:
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| `drawFilePath` | `string` | `undefined` | The path to the excalidraw json file. |
+| `drawFilePath` | `string` | `undefined` | The path to the excalidraw json file. It must be relative to your [Public Base Path](https://vitejs.dev/guide/build.html#public-base-path). |
 | `darkMode` | `boolean` | `false` | Whether to use dark mode. |
 | `background` | `boolean` | `false` | Whether to show the background. |

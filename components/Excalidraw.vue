@@ -12,11 +12,14 @@ interface AppState {
   exportBackground: boolean;
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   drawFilePath: string
-  darkMode?: boolean
+  darkMode?: true
   background?: boolean
-}>()
+}>(), {
+  darkMode: false,
+  background: false,
+})
 
 const svg = ref<string | null>(null)
 
@@ -27,8 +30,9 @@ onMounted(() => {
 const loadJsonAndExport = async ({ drawFilePath: path, darkMode = false, background = false }: { drawFilePath: string; darkMode: boolean; background: boolean }) => {
   try {
     // Dynamically import the JSON file using import()
-    /* @vite-ignore */
-    const { default: json } = await import(path)
+    // const { default: json } = await import(path)
+    const url = new URL(path, window.location.origin + import.meta.env.BASE_URL).href
+    const json = await (await fetch(url)).json()
 
     const svgElement = await exportToSvg({
       ...json,
