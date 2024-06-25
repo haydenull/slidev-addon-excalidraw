@@ -1,6 +1,6 @@
 {
   "name": "slidev-addon-excalidraw",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "show excalidraw in slidev",
   "type": "module",
   "scripts": {
@@ -15,9 +15,6 @@
     "@slidev/cli": "^0.49.11",
     "@slidev/theme-default": "^0.25.0",
     "playwright-chromium": "^1.44.1"
-  },
-  "dependencies": {
-    "@excalidraw/utils": "^0.1.2"
   },
   "keywords": [
     "slidev",
