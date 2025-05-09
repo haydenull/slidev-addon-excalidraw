@@ -40,7 +40,7 @@ onMounted(() => {
 
 const loadJsonAndExport = async ({ drawFilePath: path, darkMode = false, background = false }: { drawFilePath: string; darkMode: boolean; background: boolean }) => {
   try {
-    const url = new URL(path, window.location.origin + import.meta.env.BASE_URL).href
+    const url = path.startsWith("http") ? path : new URL(path, window.location.origin + import.meta.env.BASE_URL).href
     const json = await (await fetch(url)).json()
 
     const svgElement = await ExcalidrawLib.exportToSvg({
