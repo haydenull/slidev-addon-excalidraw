@@ -18,6 +18,8 @@ const props = withDefaults(defineProps<{
   drawFilePath: string
   darkMode?: true
   background?: boolean
+  frameId?: string | null | undefined
+  frame?: string | null | undefined
 }>(), {
   darkMode: false,
   background: false,
@@ -43,8 +45,14 @@ const loadJsonAndExport = async ({ drawFilePath: path, darkMode = false, backgro
     const url = new URL(path, window.location.origin + import.meta.env.BASE_URL).href
     const json = await (await fetch(url)).json()
 
-    const svgElement = await ExcalidrawLib.exportToSvg({
+    const filterId = frameId ? frameId : (json.elements.find(e => e.type === "frame" && e.name === frame)?.id ?? null)
+    const filtered = filterId ? {
       ...json,
+      elements: json.elements.filter(e => e.frameId === filterId)
+    } : json
+
+    const svgElement = await ExcalidrawLib.exportToSvg({
+      ...filtered,
       appState: {
         ...(json.appState as any),
         exportWithDarkMode: darkMode,
