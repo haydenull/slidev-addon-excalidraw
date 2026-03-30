@@ -1,81 +1,113 @@
 <template>
   <p v-if="loading">Loading Excalidraw...</p>
-  <div :class="$attrs.class" v-if="svg" v-html="svg"></div>
+  <p v-else-if="errorMessage">{{ errorMessage }}</p>
+  <div v-else-if="svg" :class="$attrs.class" v-html="svg"></div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, useAttrs } from 'vue'
-const attrs = useAttrs()
-const loading = ref(false)
-const svg = ref<string | null>(null)
+import { onMounted, ref } from 'vue'
 
-interface AppState {
-  exportWithDarkMode: boolean;
-  exportBackground: boolean;
+interface ExcalidrawAppState {
+  exportWithDarkMode?: boolean
+  exportBackground?: boolean
+  viewBackgroundColor?: string
+  [key: string]: unknown
 }
+
+interface ExcalidrawScene {
+  elements?: unknown[]
+  appState?: ExcalidrawAppState
+  files?: Record<string, unknown> | null
+}
+
+interface ExcalidrawModule {
+  exportToSvg: (scene: {
+    elements: readonly unknown[]
+    appState: ExcalidrawAppState
+    files: Record<string, unknown> | null
+  }) => Promise<SVGSVGElement>
+}
+
+declare global {
+  interface Window {
+    EXCALIDRAW_ASSET_PATH?: string | string[]
+  }
+}
+
+const EXCALIDRAW_VERSION = '0.18.0'
+const EXCALIDRAW_MODULE_URL = `https://esm.sh/@excalidraw/excalidraw@${EXCALIDRAW_VERSION}?bundle&exports=exportToSvg`
+const EXCALIDRAW_ASSET_PATH = `https://esm.sh/@excalidraw/excalidraw@${EXCALIDRAW_VERSION}/dist/prod/`
+
+let excalidrawModulePromise: Promise<ExcalidrawModule> | null = null
+
+const loading = ref(false)
+const errorMessage = ref<string | null>(null)
+const svg = ref<string | null>(null)
 
 const props = withDefaults(defineProps<{
   drawFilePath: string
-  darkMode?: true
+  darkMode?: boolean
   background?: boolean
 }>(), {
   darkMode: false,
   background: false,
 })
 
-
-onMounted(() => {
+onMounted(async () => {
   loading.value = true
-  loadScriptsSimultaneously([
-    'https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js',
-    'https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js',
-    'https://cdn.jsdelivr.net/npm/@excalidraw/excalidraw/dist/excalidraw.production.min.js',
-  ]).then(() => {
-    loadJsonAndExport(props)
-  }).finally(() => {
-    loading.value = false
-  })
-})
+  errorMessage.value = null
 
-
-const loadJsonAndExport = async ({ drawFilePath: path, darkMode = false, background = false }: { drawFilePath: string; darkMode: boolean; background: boolean }) => {
   try {
-    const url = new URL(path, window.location.origin + import.meta.env.BASE_URL).href
-    const json = await (await fetch(url)).json()
-
-    const svgElement = await ExcalidrawLib.exportToSvg({
-      ...json,
+    const { exportToSvg } = await loadExcalidrawModule()
+    const drawData = await loadDrawFile(props.drawFilePath)
+    const svgElement = await exportToSvg({
+      elements: drawData.elements ?? [],
       appState: {
-        ...(json.appState as any),
-        exportWithDarkMode: darkMode,
-        exportBackground: background,
-      }
+        ...(drawData.appState ?? {}),
+        exportWithDarkMode: props.darkMode,
+        exportBackground: props.background,
+        viewBackgroundColor: drawData.appState?.viewBackgroundColor ?? '#ffffff',
+      },
+      files: drawData.files ?? null,
     })
+
     svgElement.style.maxWidth = '100%'
     svgElement.style.height = 'auto'
-
     svg.value = svgElement.outerHTML
   } catch (error) {
     console.error('Failed to load JSON or export to SVG', error)
+    errorMessage.value = 'Failed to render Excalidraw.'
+  } finally {
+    loading.value = false
   }
+})
+
+async function loadExcalidrawModule() {
+  if (!window.EXCALIDRAW_ASSET_PATH)
+    window.EXCALIDRAW_ASSET_PATH = EXCALIDRAW_ASSET_PATH
+
+  if (!excalidrawModulePromise) {
+    excalidrawModulePromise = import(
+      /* @vite-ignore */
+      EXCALIDRAW_MODULE_URL
+    ) as Promise<ExcalidrawModule>
+
+    excalidrawModulePromise = excalidrawModulePromise.catch((error) => {
+      excalidrawModulePromise = null
+      throw error
+    })
+  }
+
+  return excalidrawModulePromise
 }
 
-function loadScript(src) {
-  return new Promise((resolve, reject) => {
-    // 如果该 src 的 script 已经加载过,直接返回
-    if (document.querySelector(`script[src="${src}"]`)) {
-      resolve('success')
-      return
-    }
-    const script = document.createElement('script')
-    script.src = src
-    script.onload = resolve
-    script.onerror = reject
-    document.head.appendChild(script)
-  })
-}
-function loadScriptsSimultaneously(srcList: string[]) {
-  const promises = srcList.map(src => loadScript(src))
-  return Promise.all(promises)
+async function loadDrawFile(path: string): Promise<ExcalidrawScene> {
+  const url = new URL(path, window.location.origin + import.meta.env.BASE_URL).href
+  const response = await fetch(url)
+
+  if (!response.ok)
+    throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`)
+
+  return response.json()
 }
 </script>

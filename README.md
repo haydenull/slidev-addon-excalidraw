@@ -2,6 +2,8 @@
 
 show excalidraw in [slidev](https://sli.dev/)
 
+The addon renders `.excalidraw.json` files to SVG with Excalidraw's modern export pipeline, including newer font families such as `Excalifont`.
+
 ![example](./example-export/1.png)
 
 ```md
@@ -70,3 +72,8 @@ addons:
 | `drawFilePath` | `string` | `undefined` | The path to the excalidraw json file. It must be relative to your [Public Base Path](https://vitejs.dev/guide/build.html#public-base-path). |
 | `darkMode` | `boolean` | `false` | Whether to use dark mode. |
 | `background` | `boolean` | `false` | Whether to show the background. |
+
+### Notes
+
+- The component loads `exportToSvg` from `@excalidraw/excalidraw@0.18.0` via [esm.sh](https://esm.sh).
+- If you need to self-host Excalidraw font assets, set `window.EXCALIDRAW_ASSET_PATH` before mounting Slidev so Excalidraw can resolve the font files during SVG export.
