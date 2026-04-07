@@ -69,7 +69,7 @@ addons:
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| `drawFilePath` | `string` | `undefined` | The path to the excalidraw json file. It must be relative to your [Public Base Path](https://vitejs.dev/guide/build.html#public-base-path). |
+| `drawFilePath` | `string` | `undefined` | The path to the excalidraw file. It must be relative to your [Public Base Path](https://vitejs.dev/guide/build.html#public-base-path). |
 | `darkMode` | `boolean` | `false` | Whether to use dark mode. |
 | `background` | `boolean` | `false` | Whether to show the background. |
 
