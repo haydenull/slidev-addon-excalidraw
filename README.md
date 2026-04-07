@@ -77,3 +77,17 @@ addons:
 
 - The component loads `exportToSvg` from `@excalidraw/excalidraw@0.18.0` via [esm.sh](https://esm.sh).
 - If you need to self-host Excalidraw font assets, set `window.EXCALIDRAW_ASSET_PATH` before mounting Slidev so Excalidraw can resolve the font files during SVG export.
+
+## Release
+
+Manual release flow for maintainers:
+
+```bash
+git checkout main
+git pull origin main
+npm version patch # or minor / major
+npm publish
+git push origin main --follow-tags
+```
+
+`npm version` updates the package version and creates a git tag.
