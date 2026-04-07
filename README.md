@@ -2,7 +2,7 @@
 
 show excalidraw in [slidev](https://sli.dev/)
 
-The addon renders `.excalidraw.json` files to SVG with Excalidraw's modern export pipeline, including newer font families such as `Excalifont`.
+The addon renders `.excalidraw` files to SVG with Excalidraw's modern export pipeline, including newer font families such as `Excalifont`.
 
 ![example](./example-export/1.png)
 
