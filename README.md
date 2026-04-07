@@ -2,6 +2,8 @@
 
 show excalidraw in [slidev](https://sli.dev/)
 
+The addon renders `.excalidraw` files to SVG with Excalidraw's modern export pipeline, including newer font families such as `Excalifont`.
+
 ![example](./example-export/1.png)
 
 ```md
@@ -13,7 +15,7 @@ layout: center
 # slidev-addon-excalidraw
 
 <Excalidraw
-  drawFilePath="./example.excalidraw.json"
+  drawFilePath="./example.excalidraw"
   class="w-[600px]"
   :darkMode="false"
   :background="false"
@@ -56,7 +58,7 @@ addons:
 
 ```vue
 <Excalidraw
-  drawFilePath="./example.excalidraw.json"
+  drawFilePath="./example.excalidraw"
   class="w-[600px]"
   :darkMode="false"
   :background="false"
@@ -67,6 +69,11 @@ addons:
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| `drawFilePath` | `string` | `undefined` | The path to the excalidraw json file. It must be relative to your [Public Base Path](https://vitejs.dev/guide/build.html#public-base-path). |
+| `drawFilePath` | `string` | `undefined` | The path to the excalidraw file. It must be relative to your [Public Base Path](https://vitejs.dev/guide/build.html#public-base-path). |
 | `darkMode` | `boolean` | `false` | Whether to use dark mode. |
 | `background` | `boolean` | `false` | Whether to show the background. |
+
+### Notes
+
+- The component loads `exportToSvg` from `@excalidraw/excalidraw@0.18.0` via [esm.sh](https://esm.sh).
+- If you need to self-host Excalidraw font assets, set `window.EXCALIDRAW_ASSET_PATH` before mounting Slidev so Excalidraw can resolve the font files during SVG export.

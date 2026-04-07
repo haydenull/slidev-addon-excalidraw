@@ -6,7 +6,7 @@ layout: center
 # slidev-addon-excalidraw
 
 <Excalidraw
-  drawFilePath="./example.excalidraw.json"
+  drawFilePath="./example.excalidraw"
   class="w-[600px]"
   :darkMode="false"
   :background="false"
