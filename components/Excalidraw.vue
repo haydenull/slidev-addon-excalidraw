@@ -73,7 +73,20 @@ onMounted(async () => {
 
     svgElement.style.maxWidth = '100%'
     svgElement.style.height = 'auto'
-    svg.value = svgElement.outerHTML
+
+    // Namespace all IDs to avoid collisions when same file renders on multiple slides
+    // Generate a unique suffix per component instance
+    let svgString = svgElement.outerHTML
+    const uniqueSuffix = Math.random().toString(36).substring(2, 9)
+    
+    // Rewrite all id="..." to add namespace
+    svgString = svgString.replace(/id="([^"]+)"/g, `id="$1-${uniqueSuffix}"`)
+    // Rewrite all url(#...) references (mask, clip-path, fill, stroke, filter, etc.)
+    svgString = svgString.replace(/url\(#([^)]+)\)/g, `url(#$1-${uniqueSuffix})`)
+    // Rewrite all href="#..." references (use elements, etc.) - but not data URIs
+    svgString = svgString.replace(/href="#([^"]+)"/g, `href="#$1-${uniqueSuffix}"`)
+
+    svg.value = svgString
   } catch (error) {
     console.error('Failed to load JSON or export to SVG', error)
     errorMessage.value = 'Failed to render Excalidraw.'
